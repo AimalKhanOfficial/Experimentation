@@ -35,3 +35,39 @@
 		- We are done with setting up our virtual machine. We may need to set up multiple vm boxes for multiple env(s) i.e. Staging/Stabilize/Production etc. 
 		- Click on the vmBox, it will start installing the windows. Set your password and login.
 		- When you see the dashboard, its time to download firefox/chrome, and enable IIS.
+
+--Setting Up IIS--
+
+[1] - Open your Virtual machine, search for 'Server Manager' and open it. On the Dashboard, you'll see 'Add Roles And Features' option, click on it
+[2] - A popup will appear, click next until you reach 'Select Server Roles' option, you'll now see features to turn on for this windows instance
+[3] - Scroll Down, Select 'Web Server - IIS'. Also, Expand it, select 'Application Deployment' and expand it, check ASP.NET 3.5 and  ASP.NET 4.5, click next and select install
+
+
+--Setting Up Octopus Server AND AN ENVIRONMENT--
+
+[1] - Octopus works in a hub and spoke manner. What that means is that You'll have a main Octopus Server and it will have many tentacles (Nodes, staging/stabilize). We'll configure our app to the server and then server pushes it away to difference 
+	  environments (tentacles). Tentacles require a thumbprint from Server for communication.
+[2] - To elaborate more, once we have our server setup, we configure environments like Staging and Stabilize etc (on the server itself). Then we configure lifeCycles as to WHAT STAGES WOULD OUR APPLICATION go through. We'll see these in details. Lets set 
+      up our server first
+[3] - Go to 'https://octopus.com/downloads', once the page renders, Download the Octopus Server msi. Click on the .msi. The steps are pretty straight forward. (Make sure you install it on a drive which was considerable free space available.)
+[4] - The only tricky thing here is to setup the SQL Server instance. Octopus uses SQL Server (2014 i guess) so if you have that installed, the whole installation (for server) will take not more than 10 min. Make sure you have SQL Server installed. You can 
+	  specify the server name for SQL Server to be just a DOT (.) meaning local. and Specify Database name as Octopus.
+[5]	- Specify Username and Password that'll be used for logging in to its dashboard. (I forgot it once and i had to reinstall the server instance)
+[6] - Open the Octupus Deploy and browse to the Dashboard, login with your credentials.
+[7] - Now before we set up a tentacle, we need to actually configure it here. So we'll initiate the process on Octopus Server Dashboard, we'll register an environment and we'll specify the IP and Port of that tentacle on the Server, its like these steps are
+	  dependant on each other. Here's a step by step:
+	  - Browse to http://localhost/app#/users/sign-in (if u have the octopus server set up at port 80)
+	  - Click on 'Infrastructure' from Taskbar, then 'Environment', Click on 'Add Environment', Provide Name, You'll have the environment set up. Now click on 'Add Deployment Target' and this is where we specify the Tentacle information. 
+	  - When you click on 'Add Deployment Target', you'll navigate to another screen asking for what kind of deployment target do we want. Click on Windows, Add a 'LISTENING TENTACLE', and you'll see the THUMBPRINT i.e. E2C294030DF3729155655B7A2C20877452AED39F
+	    which we'll need to provide while setting up a tentacle. By this time, you'll need to specify the HOSTNAME NAME/IP of the tentacle (the IP of the virtual machine), the PORT, Go ahead and follow --Setting Up Octopus Tentacle-- section of this document
+	  - Once you have the tentacle set up, provide its IP and PORT, click NEXT, Provide the ENVIRONMENT NAME i.e. Stabilize on the next page. Select the ROLE to be WebServer (all other options are pretty straight forward)
+
+
+--Setting Up Octopus Tentacle--
+- Remember we are targetting to have one application deployed to one Node, Its not like MTBeeeC where you'll have multiple websites deployed to One Server. No. We'll have one environment set up for one application.
+
+
+[3] - Go to 'https://octopus.com/downloads', once the page renders, search for 'Octopus Tentacle' and download it
+[4] - Once you have the .msi file, run it and execute it. Go through the steps but remember, keep track of the ports we are targetting multiple environments and ports must not overlap. Default port for a tentacle is 10933.
+[5] - You can't finish setting up a tentacle without specifying the THUMBPRINT from Octopus Server. What that means is that its like a special key which tentacle expects during communication from the server. It can't communicate with just any server
+
