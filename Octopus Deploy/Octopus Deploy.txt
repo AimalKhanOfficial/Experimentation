@@ -1,0 +1,12 @@
+--Aimal Khan (Jan 17th, 2019)
+
+-----------------------------------------
+--Configuring Octopus on Multiple Nodes--
+-----------------------------------------
+
+[1] - We need to set up Windows Server 2012 R2 Instances on 2 machines in order to replicate the Staging/Stabilize env and to do that, download an ISO file for Windows Server 2012 R2   
+	  (or any version) 
+[2] - Once that's done, we need to set up our virtual machines. Here are the requirements for that:
+		- Open vmWare, click on NEW
+		- Set any NAME, OS TYPE as Windows, VERSION as OTHER WINDOWS (The last one i guess)
+		- Set the Memory limit to be around 10-12 GB (Once Octopus was deployed, i found it to be slow)
