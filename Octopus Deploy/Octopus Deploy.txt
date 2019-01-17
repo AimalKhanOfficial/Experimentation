@@ -4,9 +4,34 @@
 --Configuring Octopus on Multiple Nodes--
 -----------------------------------------
 
+--Setting Up VMs--
+
 [1] - We need to set up Windows Server 2012 R2 Instances on 2 machines in order to replicate the Staging/Stabilize env and to do that, download an ISO file for Windows Server 2012 R2   
 	  (or any version) 
 [2] - Once that's done, we need to set up our virtual machines. Here are the requirements for that:
 		- Open vmWare, click on NEW
 		- Set any NAME, OS TYPE as Windows, VERSION as OTHER WINDOWS (The last one i guess)
 		- Set the Memory limit to be around 10-12 GB (Once Octopus was deployed, i found it to be slow)
+		- Select 'do not create a virtual disk' for now as we'll add it to a different location given the space limitations on drive C.
+		- You'll see your new machine in vmWare machines side bar, right click on it and select 'Settings'. We need to change two things here: Storage and Network 
+		- Once you see the Settings window, click on the Network option. For Adapter 1, check 'Enable Network Adapter', Set the 'Attached to' option as 'Bridged Adapter' as that'll
+		  make our virtual machine to act as a real node inside network and will be assigned a real IP. We'll be able to use that IP to access the hosted 'deployments' on that machine
+		  
+		  For more info on NAT vs Bridged, see this: https://serverfault.com/questions/490043/differences-between-bridged-and-nat-networking
+		  
+			How NAT works in a nutshell
+			
+			An external address, usually routable, is the "outside" of the NAT. The machines behind the NAT have an "inside" address that is usually non-routable. When a connection is made between an inside address and an outside address, the NAT system in the middle creates a forwarding table entry consisting of (outside_ip, outside_port, nat_host_ip, nat_host_port, inside_ip, inside_port). Any packet matching the first four parts gets its destination re-written to the last two parts.
+			
+			If a packet is received that doesn't match an entry in the NAT table, then there is no way for the NAT box to know where to forward it unless a forwarding rule was manually defined. That's why, by default, a machine behind a NAT device is "protected".
+			Bridged
+			
+			Bridged mode acts just like the interface you're bridging with is now a switch and the VM is plugged into a port on it. Everything acts the same as if it were another regular machine attached to that network.
+			
+		  
+		- Now select 'Storage' from the virtual machines options, delete the options and Add a SATA controller.
+		- Now click on the 'Add Optical Drive' option to specify the Windows Server R2 ISO file that we downloaded earlier
+		- Also 'Click' on the 'Add Hard Disk' option, then choose 'Create New Disk', Select 'VDI', Select 'Dynamically Allocated', set the hard disk size to be at least 50 GB
+		- We are done with setting up our virtual machine. We may need to set up multiple vm boxes for multiple env(s) i.e. Staging/Stabilize/Production etc. 
+		- Click on the vmBox, it will start installing the windows. Set your password and login.
+		- When you see the dashboard, its time to download firefox/chrome, and enable IIS.
