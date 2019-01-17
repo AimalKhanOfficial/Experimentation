@@ -71,3 +71,36 @@
 [4] - Once you have the .msi file, run it and execute it. Go through the steps but remember, keep track of the ports we are targetting multiple environments and ports must not overlap. Default port for a tentacle is 10933.
 [5] - You can't finish setting up a tentacle without specifying the THUMBPRINT from Octopus Server. What that means is that its like a special key which tentacle expects during communication from the server. It can't communicate with just any server
 
+--(Manually) Setting Up a Project with Octopack--
+
+[1] - The way Octopus works is that we provide a Nuget file (with .nupkg ext) to it. It a zip file with all of our resources and has a minifest file which defines the whole structure of the zip file
+[2] - Create a new MVC Web APP, add a Nuget package called 'OCTOPACK' to it. Now, to create that nuget file which OCTOPUS uses, we'll need to manually build the project (by manual we mean that this is just a one time effort to understand how it all works)
+[3] - Open CMD, navigate to the directory where you have the .sln file for the project. Now run this command: msbuild MySolution.sln /t:Build /p:RunOctoPack=true (remember if u have issues with MSBuild, you may need to update the PATH SYSTEM VARIABLE 
+	 (under 'My Computer') with the path to MSBuild OR/AND install MSBuild as part of visual studio. Here's the complete answer)
+		
+	REFERENCE: https://stackoverflow.com/questions/6319274/how-do-i-run-msbuild-from-the-command-line-using-windows-sdk-7-1/12608705#12608705
+	To enable msbuild in Command Prompt, you simply have to add the path to the .NET 4 Framework install on your machine to the PATH environment variable.
+	
+	You can access the environment variables by:
+	
+		Right clicking on Computer
+		Click Properties
+		Then click Advanced system settings on the left navigation bar
+		On the next dialog box click Environment variables
+		Scroll down to PATH
+		Edit it to include your path to the framework (don't forget a ";" after the last entry in here).
+	
+	For reference, my path was C:\Windows\Microsoft.NET\Framework\v4.0.30319
+	3/21/18 Path Update:
+	
+	As of MSBuild 12 (2013)/VS 2013/.NET 4.5.1+ and onward MSBuild is now installed as a part of Visual Studio.
+	
+	For reference, with VS2015 installed my machine my path is C:\Program Files (x86)\MSBuild\14.0\Bin
+
+[4] - Once you have the Nuget file (inside the bin folder for the project), go the octopus server dashboard, click on 'LIBRARY' on nav bar, and under 'PACKAGES' tab, select 'UPLOAD PACKAGE'. This is going to be used when you'll be creating new cycles/releases
+	
+--Setting Up a life Cycle on Octupus Server--
+
+[1] - Once we have our environments set up, we can an app go through the lifecycle. In a practical environment, a developer may develop an app on dev env, a QA guy may test on a staging and so on and so fourth!
+[2] - To Setp up a lifeCycle, we 
+
