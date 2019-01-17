@@ -35,8 +35,12 @@
 		- We are done with setting up our virtual machine. We may need to set up multiple vm boxes for multiple env(s) i.e. Staging/Stabilize/Production etc. 
 		- Click on the vmBox, it will start installing the windows. Set your password and login.
 		- When you see the dashboard, its time to download firefox/chrome, and enable IIS.
+		
+		
+		
 
 --Setting Up IIS--
+------------------
 
 [1] - Open your Virtual machine, search for 'Server Manager' and open it. On the Dashboard, you'll see 'Add Roles And Features' option, click on it
 [2] - A popup will appear, click next until you reach 'Select Server Roles' option, you'll now see features to turn on for this windows instance
@@ -61,11 +65,15 @@
 	  - When you click on 'Add Deployment Target', you'll navigate to another screen asking for what kind of deployment target do we want. Click on Windows, Add a 'LISTENING TENTACLE', and you'll see the THUMBPRINT i.e. E2C294030DF3729155655B7A2C20877452AED39F
 	    which we'll need to provide while setting up a tentacle. By this time, you'll need to specify the HOSTNAME NAME/IP of the tentacle (the IP of the virtual machine), the PORT, Go ahead and follow --Setting Up Octopus Tentacle-- section of this document
 	  - Once you have the tentacle set up, provide its IP and PORT, click NEXT, Provide the ENVIRONMENT NAME i.e. Stabilize on the next page. Select the ROLE to be WebServer (all other options are pretty straight forward)
+	  
+	  
+	  
 
 
 --Setting Up Octopus Tentacle--
-- Remember we are targetting to have one application deployed to one Node, Its not like MTBeeeC where you'll have multiple websites deployed to One Server. No. We'll have one environment set up for one application.
+-------------------------------
 
+- Remember we are targetting to have one application deployed to one Node, Its not like MTBeeeC where you'll have multiple websites deployed to One Server. No. We'll have one environment set up for one application.
 
 [3] - Go to 'https://octopus.com/downloads', once the page renders, search for 'Octopus Tentacle' and download it
 [4] - Once you have the .msi file, run it and execute it. Go through the steps but remember, keep track of the ports we are targetting multiple environments and ports must not overlap. Default port for a tentacle is 10933.
@@ -98,9 +106,33 @@
 	For reference, with VS2015 installed my machine my path is C:\Program Files (x86)\MSBuild\14.0\Bin
 
 [4] - Once you have the Nuget file (inside the bin folder for the project), go the octopus server dashboard, click on 'LIBRARY' on nav bar, and under 'PACKAGES' tab, select 'UPLOAD PACKAGE'. This is going to be used when you'll be creating new cycles/releases
+
+
 	
 --Setting Up a life Cycle on Octupus Server--
+---------------------------------------------
 
-[1] - Once we have our environments set up, we can an app go through the lifecycle. In a practical environment, a developer may develop an app on dev env, a QA guy may test on a staging and so on and so fourth!
-[2] - To Setp up a lifeCycle, we 
+[1] - Once we have our environments set up, a package deployed, We can set up an actual project on Octopus. BUT a project needs to go through a particular life cycle. In a practical environment, a developer may develop an app on dev env, a QA guy may test on a
+	  staging and so on and so fourth! 
+[2] - To Setp up a lifeCycle, click on 'Library' on nav bar, then select 'LifeCycles'. Click 'ADD LifeCycle', Provide a name and a meaningful description. Retention policy is when you have A LOT of lifeCycles after sometime, what do you need to do? Keep all
+	  of them OR make Octopus delete some of them from time-to-time? You can specify your custom retention policy based on your needs. 
+[3] - Now a lifeCycle has phases. By Phases i mean, environments. Remember we set up all the environments i.e. Staging/Stabilize/Production etc. first? Click on 'ADD PHASE', Specify a 'PHASE NAME', CLICK on 'Add Environment', Select Environment. Remember that
+	  we need to consider the order here as well. Also, if you choose automatic deployment, Octopus will deploy it for you once it reaches some level, for now, i did it using manual deployment so select the SECOND OPTION to deploy it manually.
+[4] - Remember that Deployment to Production must always be manual. Once we have our life cycle set up, we can go ahead and create a project.
+
+
+
+
+--Setting Up a Project on Octupus Server--
+------------------------------------------
+
+[1] - A project needs to have a NUGET package (we uploaded it previously) and a lifeCycle (previous step). Click on 'PROJECTS' from nav bar, select 'ADD PROJECT', Provide a meaningful name, select LifeCycle.
+[2] - Now you need to specify your DEPLOYMENT PROCESS. By that we mean that what is the source for this project? Do you have a package (NUGET) file? Do you have a project set up on local IIS? For now, select 'ADD Deployment Process', then select 'Add Step', 
+	  then select 'Deploy a package', Provide a STEP NAME, select the WEBSERVER role for ON TARGET IN ROLES, Select PACKAGE ID as THE NAME OF YOUR PACKAGE when you deployed a package (Nuget file remember?)
+[3] - Under the FEATURES section, select CONFIGURE FEATURES. This is where we specify where (on the tentacle) do we need to deploy the app. For now, we'll select CUSTOM INSTALLATION DIRECTORY. When u select that, you'll see a new field added to features section
+	  called CUSTOM INSTALL DIRECTORY. Enter 'C:\inetpub\wwwroot' there! AND NOW WE HAVE OUR STEP CONFIGURED.
+[4] - Now we need to have a release. So a Step gets converted into a release. On the same page, click on release (under project details), Click on 'Add release', select the package number and click 'Save'. Now click on 'Deploy To Staging!'
+
+That's about it.
+
 
