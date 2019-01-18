@@ -79,7 +79,11 @@
 [4] - Once you have the .msi file, run it and execute it. Go through the steps but remember, keep track of the ports we are targetting multiple environments and ports must not overlap. Default port for a tentacle is 10933.
 [5] - You can't finish setting up a tentacle without specifying the THUMBPRINT from Octopus Server. What that means is that its like a special key which tentacle expects during communication from the server. It can't communicate with just any server
 
+
+
+
 --(Manually) Setting Up a Project with Octopack--
+--------------------------------------------------------------
 
 [1] - The way Octopus works is that we provide a Nuget file (with .nupkg ext) to it. It a zip file with all of our resources and has a minifest file which defines the whole structure of the zip file
 [2] - Create a new MVC Web APP, add a Nuget package called 'OCTOPACK' to it. Now, to create that nuget file which OCTOPUS uses, we'll need to manually build the project (by manual we mean that this is just a one time effort to understand how it all works)
@@ -106,7 +110,7 @@
 	For reference, with VS2015 installed my machine my path is C:\Program Files (x86)\MSBuild\14.0\Bin
 
 [4] - Once you have the Nuget file (inside the bin folder for the project), go the octopus server dashboard, click on 'LIBRARY' on nav bar, and under 'PACKAGES' tab, select 'UPLOAD PACKAGE'. This is going to be used when you'll be creating new cycles/releases
-
+[5] - If u can't generate a nuget package still, download DEVELOPER COMMAND PROMPT FOR VS 2017 and that should do the trick!
 
 	
 --Setting Up a life Cycle on Octupus Server--
