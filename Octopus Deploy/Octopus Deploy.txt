@@ -140,3 +140,40 @@
 That's about it.
 
 
+
+--Setting Up JENKINS as a build tool to get rid of Manual Deployment--
+----------------------------------------------------------------------
+
+[1] - So Now we'll let Jenkins, which is a continuous integration tool, build our project and make the NUGET file that we've been deploying manually! Jenkins can have your builds ready in three different ways: 
+	  - Periodic Builds (At a Particular time i.e. 4:30am)
+	  - Polling Builds (Checks your repo if code was changed after a particular time interval, over and over again. if yes, creates a new build. We'll use this one)
+	  - Triggered Builds (Creates a build when a developer checks-in code)
+[2] - The way we set up Polling Builds work is we specify a particular format in CRON Format i.e. (Minute Hour Day Month Weekday etc. */5 * * * * *). CRON btw is a Task Scheduler in Linux (i guess)
+[3] - Download jenkins from: https://jenkins.io/download/ , now open the Jenkins.msi, install it and it may require a reboot
+[4] - Once thats done, Jenkins will be running on localhost:8080. Let it download its required pluggins and create a user sign up by providing username, password, emailId etc. Login to Jenkins to see the Jenkins Dashboard
+[5] - Now before we proceed ahead, we need a git repo and a project in it! You can copy/paste the same test project that we've been playing with up till now. To create a git repo, open CMD and navigate to the directory and execute 'git init'. We may also need
+	  a remote repo - use github. We need to specify the REMOTE directory of the Repo in Jenkins
+[6] - Since we're using MSBuild to create the NUGET package for our project, we need MSBuild on Jenkins as well. Navigate to MANAGE JENKINS from DASHBOARD and click on MANAGE PLUGINS. Click on AVAILABLE section, select MSBuild and install it
+[7] - We also need to specify the URL for our local MsBuild to Jenkins. To do that, navigate back to MANAGE JENKINS page again, click on GLOBAL TOOL CONFIGURATION. You'll see MsBuild over there. Click on Add MsBuild and Provide the following details:
+	- Name it anything
+	- You can find the path of MsBuild it C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\msbuild.exe
+	- Leave DEFAULT PARAMS blank and Check INSTALL AUTOMATICALLY and click on SAVE
+[8] - We may need to repeat the same step for GIT (path -> C:\Program Files\Git\bin\git.exe)
+[9] - Now that our MsBuild is set up, we need to create a new Project for Jenkins to operate on. To do that, navigate to Jenkins Dashboard and click on CREATE NEW JOB, provide a project name (try to name it the same as that of Octopus), select free style
+	  project and click ok.
+[10] - On the next page, provide a meaningful description and under the SOURCE CONTROL section, select git, provide git repo (the Remote One) and now under the BUILD section, select the MsBuild Name that you configured earlier, and provide the Build file as 
+	  ${WORKSPACE}\MyTestWebSite\MyTestWebSite.sln (You'll see your project to be cloned to C:\Program Files (x86)\Jenkins\workspace\ directory when we specified our git repo) - Specifying a local git repo did not work for me and i was stuck at multiple points.
+	  Also, specify COMMAND LINE ARGUMENTS to be: /p:RunOctoPack=true /p:OctoPackPackageVersion=1.1.${BUILD_NUMBER} /p:OctoPackPublishPackageToHttp=http://localhost/nuget/packages /p:OctoPackPublishApiKey=${OctopusApiKey}
+[11] - We need an OctopusApiKey which we get from Octopus. Same as we submitted a ThumbPrint for our Tentacle. To get that, go to octopus server, select your profile, select MY API KEYS and after that, select NEW API KEY. Provide Purpose, and you'll get a key
+[12] - You can paste that key right there OR you can go to MANAGE Jenkins, CONFIGURE SYSTEM, and under the Global properties section, you can copy paste the key (OctopusApiKey) and its value (API KEY) 
+[13] - Now if u go OCTOPUS SERVER and LIBRARY, you'll see a new release there. We can push it to release 
+[14] - To Automate this whole process when we recieve a new release, we can download OCTO.exe (which is a command line app), download it from: https://octopus.com/downloads, it will be just an exe so extract it to a folder named OCTO on C drive
+[15] - Not to use this Octo.exe, we need to create a Build Step on jenkins. Go to jenkins, to that project we configured, and its configuration, and to ADD BUILD STEP, select EXECUTE WINDOWS BATCH COMMAND and paste 
+
+"C:\Octo\Octo.exe" create-release --project "%JOB_NAME%" --version 1.1.%BUILD_NUMBER% --packageversion 1.1.%BUILD_NUMBER% --server http://localhost/ --apiKey %OctopusApiKey% --releaseNotes "Jenkins build [%BUILD_NUMBER%](http://localhost:8054/job/MyTestWebSite/%BUILD_NUMBER%)/" 
+
+- Notice the "%JOB_NAME%" entry here, that is why we must keep octopus and jenkins project name same.
+
+
+ 
+
