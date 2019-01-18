@@ -173,6 +173,8 @@ That's about it.
 "C:\Octo\Octo.exe" create-release --project "%JOB_NAME%" --version 1.1.%BUILD_NUMBER% --packageversion 1.1.%BUILD_NUMBER% --server http://localhost/ --apiKey %OctopusApiKey% --releaseNotes "Jenkins build [%BUILD_NUMBER%](http://localhost:8054/job/MyTestWebSite/%BUILD_NUMBER%)/" 
 
 - Notice the "%JOB_NAME%" entry here, that is why we must keep octopus and jenkins project name same.
+- Just an ending note: We added this extra build step in the end because Jenkins was only giving us a package and not an actual release. When we configured this build step, we can now have the jenkins build listed under release for our project on octopus server,
+  we still, however, need to CLICK 'DEPLOY TO STAGING' for actual deployment to staging since we want a manual deployment.
 
 
  
