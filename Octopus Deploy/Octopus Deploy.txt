@@ -1,0 +1,181 @@
+--Aimal Khan (Jan 17th, 2019)
+
+-----------------------------------------
+--Configuring Octopus on Multiple Nodes--
+-----------------------------------------
+
+--Setting Up VMs--
+
+[1] - We need to set up Windows Server 2012 R2 Instances on 2 machines in order to replicate the Staging/Stabilize env and to do that, download an ISO file for Windows Server 2012 R2   
+	  (or any version) 
+[2] - Once that's done, we need to set up our virtual machines. Here are the requirements for that:
+		- Open vmWare, click on NEW
+		- Set any NAME, OS TYPE as Windows, VERSION as OTHER WINDOWS (The last one i guess)
+		- Set the Memory limit to be around 10-12 GB (Once Octopus was deployed, i found it to be slow)
+		- Select 'do not create a virtual disk' for now as we'll add it to a different location given the space limitations on drive C.
+		- You'll see your new machine in vmWare machines side bar, right click on it and select 'Settings'. We need to change two things here: Storage and Network 
+		- Once you see the Settings window, click on the Network option. For Adapter 1, check 'Enable Network Adapter', Set the 'Attached to' option as 'Bridged Adapter' as that'll
+		  make our virtual machine to act as a real node inside network and will be assigned a real IP. We'll be able to use that IP to access the hosted 'deployments' on that machine
+		  
+		  For more info on NAT vs Bridged, see this: https://serverfault.com/questions/490043/differences-between-bridged-and-nat-networking
+		  
+			How NAT works in a nutshell
+			
+			An external address, usually routable, is the "outside" of the NAT. The machines behind the NAT have an "inside" address that is usually non-routable. When a connection is made between an inside address and an outside address, the NAT system in the middle creates a forwarding table entry consisting of (outside_ip, outside_port, nat_host_ip, nat_host_port, inside_ip, inside_port). Any packet matching the first four parts gets its destination re-written to the last two parts.
+			
+			If a packet is received that doesn't match an entry in the NAT table, then there is no way for the NAT box to know where to forward it unless a forwarding rule was manually defined. That's why, by default, a machine behind a NAT device is "protected".
+			Bridged
+			
+			Bridged mode acts just like the interface you're bridging with is now a switch and the VM is plugged into a port on it. Everything acts the same as if it were another regular machine attached to that network.
+			
+		  
+		- Now select 'Storage' from the virtual machines options, delete the options and Add a SATA controller.
+		- Now click on the 'Add Optical Drive' option to specify the Windows Server R2 ISO file that we downloaded earlier
+		- Also 'Click' on the 'Add Hard Disk' option, then choose 'Create New Disk', Select 'VDI', Select 'Dynamically Allocated', set the hard disk size to be at least 50 GB
+		- We are done with setting up our virtual machine. We may need to set up multiple vm boxes for multiple env(s) i.e. Staging/Stabilize/Production etc. 
+		- Click on the vmBox, it will start installing the windows. Set your password and login.
+		- When you see the dashboard, its time to download firefox/chrome, and enable IIS.
+		
+		
+		
+
+--Setting Up IIS--
+------------------
+
+[1] - Open your Virtual machine, search for 'Server Manager' and open it. On the Dashboard, you'll see 'Add Roles And Features' option, click on it
+[2] - A popup will appear, click next until you reach 'Select Server Roles' option, you'll now see features to turn on for this windows instance
+[3] - Scroll Down, Select 'Web Server - IIS'. Also, Expand it, select 'Application Deployment' and expand it, check ASP.NET 3.5 and  ASP.NET 4.5, click next and select install
+
+
+--Setting Up Octopus Server AND AN ENVIRONMENT--
+
+[1] - Octopus works in a hub and spoke manner. What that means is that You'll have a main Octopus Server and it will have many tentacles (Nodes, staging/stabilize). We'll configure our app to the server and then server pushes it away to difference 
+	  environments (tentacles). Tentacles require a thumbprint from Server for communication.
+[2] - To elaborate more, once we have our server setup, we configure environments like Staging and Stabilize etc (on the server itself). Then we configure lifeCycles as to WHAT STAGES WOULD OUR APPLICATION go through. We'll see these in details. Lets set 
+      up our server first
+[3] - Go to 'https://octopus.com/downloads', once the page renders, Download the Octopus Server msi. Click on the .msi. The steps are pretty straight forward. (Make sure you install it on a drive which was considerable free space available.)
+[4] - The only tricky thing here is to setup the SQL Server instance. Octopus uses SQL Server (2014 i guess) so if you have that installed, the whole installation (for server) will take not more than 10 min. Make sure you have SQL Server installed. You can 
+	  specify the server name for SQL Server to be just a DOT (.) meaning local. and Specify Database name as Octopus.
+[5]	- Specify Username and Password that'll be used for logging in to its dashboard. (I forgot it once and i had to reinstall the server instance)
+[6] - Open the Octupus Deploy and browse to the Dashboard, login with your credentials.
+[7] - Now before we set up a tentacle, we need to actually configure it here. So we'll initiate the process on Octopus Server Dashboard, we'll register an environment and we'll specify the IP and Port of that tentacle on the Server, its like these steps are
+	  dependant on each other. Here's a step by step:
+	  - Browse to http://localhost/app#/users/sign-in (if u have the octopus server set up at port 80)
+	  - Click on 'Infrastructure' from Taskbar, then 'Environment', Click on 'Add Environment', Provide Name, You'll have the environment set up. Now click on 'Add Deployment Target' and this is where we specify the Tentacle information. 
+	  - When you click on 'Add Deployment Target', you'll navigate to another screen asking for what kind of deployment target do we want. Click on Windows, Add a 'LISTENING TENTACLE', and you'll see the THUMBPRINT i.e. E2C294030DF3729155655B7A2C20877452AED39F
+	    which we'll need to provide while setting up a tentacle. By this time, you'll need to specify the HOSTNAME NAME/IP of the tentacle (the IP of the virtual machine), the PORT, Go ahead and follow --Setting Up Octopus Tentacle-- section of this document
+	  - Once you have the tentacle set up, provide its IP and PORT, click NEXT, Provide the ENVIRONMENT NAME i.e. Stabilize on the next page. Select the ROLE to be WebServer (all other options are pretty straight forward)
+	  
+	  
+	  
+
+
+--Setting Up Octopus Tentacle--
+-------------------------------
+
+- Remember we are targetting to have one application deployed to one Node, Its not like MTBeeeC where you'll have multiple websites deployed to One Server. No. We'll have one environment set up for one application.
+
+[3] - Go to 'https://octopus.com/downloads', once the page renders, search for 'Octopus Tentacle' and download it
+[4] - Once you have the .msi file, run it and execute it. Go through the steps but remember, keep track of the ports we are targetting multiple environments and ports must not overlap. Default port for a tentacle is 10933.
+[5] - You can't finish setting up a tentacle without specifying the THUMBPRINT from Octopus Server. What that means is that its like a special key which tentacle expects during communication from the server. It can't communicate with just any server
+
+
+
+
+--(Manually) Setting Up a Project with Octopack--
+--------------------------------------------------------------
+
+[1] - The way Octopus works is that we provide a Nuget file (with .nupkg ext) to it. It a zip file with all of our resources and has a minifest file which defines the whole structure of the zip file
+[2] - Create a new MVC Web APP, add a Nuget package called 'OCTOPACK' to it. Now, to create that nuget file which OCTOPUS uses, we'll need to manually build the project (by manual we mean that this is just a one time effort to understand how it all works)
+[3] - Open CMD, navigate to the directory where you have the .sln file for the project. Now run this command: msbuild MySolution.sln /t:Build /p:RunOctoPack=true (remember if u have issues with MSBuild, you may need to update the PATH SYSTEM VARIABLE 
+	 (under 'My Computer') with the path to MSBuild OR/AND install MSBuild as part of visual studio. Here's the complete answer)
+		
+	REFERENCE: https://stackoverflow.com/questions/6319274/how-do-i-run-msbuild-from-the-command-line-using-windows-sdk-7-1/12608705#12608705
+	To enable msbuild in Command Prompt, you simply have to add the path to the .NET 4 Framework install on your machine to the PATH environment variable.
+	
+	You can access the environment variables by:
+	
+		Right clicking on Computer
+		Click Properties
+		Then click Advanced system settings on the left navigation bar
+		On the next dialog box click Environment variables
+		Scroll down to PATH
+		Edit it to include your path to the framework (don't forget a ";" after the last entry in here).
+	
+	For reference, my path was C:\Windows\Microsoft.NET\Framework\v4.0.30319
+	3/21/18 Path Update:
+	
+	As of MSBuild 12 (2013)/VS 2013/.NET 4.5.1+ and onward MSBuild is now installed as a part of Visual Studio.
+	
+	For reference, with VS2015 installed my machine my path is C:\Program Files (x86)\MSBuild\14.0\Bin
+
+[4] - Once you have the Nuget file (inside the bin folder for the project), go the octopus server dashboard, click on 'LIBRARY' on nav bar, and under 'PACKAGES' tab, select 'UPLOAD PACKAGE'. This is going to be used when you'll be creating new cycles/releases
+[5] - If u can't generate a nuget package still, download DEVELOPER COMMAND PROMPT FOR VS 2017 and that should do the trick!
+
+	
+--Setting Up a life Cycle on Octupus Server--
+---------------------------------------------
+
+[1] - Once we have our environments set up, a package deployed, We can set up an actual project on Octopus. BUT a project needs to go through a particular life cycle. In a practical environment, a developer may develop an app on dev env, a QA guy may test on a
+	  staging and so on and so fourth! 
+[2] - To Setp up a lifeCycle, click on 'Library' on nav bar, then select 'LifeCycles'. Click 'ADD LifeCycle', Provide a name and a meaningful description. Retention policy is when you have A LOT of lifeCycles after sometime, what do you need to do? Keep all
+	  of them OR make Octopus delete some of them from time-to-time? You can specify your custom retention policy based on your needs. 
+[3] - Now a lifeCycle has phases. By Phases i mean, environments. Remember we set up all the environments i.e. Staging/Stabilize/Production etc. first? Click on 'ADD PHASE', Specify a 'PHASE NAME', CLICK on 'Add Environment', Select Environment. Remember that
+	  we need to consider the order here as well. Also, if you choose automatic deployment, Octopus will deploy it for you once it reaches some level, for now, i did it using manual deployment so select the SECOND OPTION to deploy it manually.
+[4] - Remember that Deployment to Production must always be manual. Once we have our life cycle set up, we can go ahead and create a project.
+
+
+
+
+--Setting Up a Project on Octupus Server--
+------------------------------------------
+
+[1] - A project needs to have a NUGET package (we uploaded it previously) and a lifeCycle (previous step). Click on 'PROJECTS' from nav bar, select 'ADD PROJECT', Provide a meaningful name, select LifeCycle.
+[2] - Now you need to specify your DEPLOYMENT PROCESS. By that we mean that what is the source for this project? Do you have a package (NUGET) file? Do you have a project set up on local IIS? For now, select 'ADD Deployment Process', then select 'Add Step', 
+	  then select 'Deploy a package', Provide a STEP NAME, select the WEBSERVER role for ON TARGET IN ROLES, Select PACKAGE ID as THE NAME OF YOUR PACKAGE when you deployed a package (Nuget file remember?)
+[3] - Under the FEATURES section, select CONFIGURE FEATURES. This is where we specify where (on the tentacle) do we need to deploy the app. For now, we'll select CUSTOM INSTALLATION DIRECTORY. When u select that, you'll see a new field added to features section
+	  called CUSTOM INSTALL DIRECTORY. Enter 'C:\inetpub\wwwroot' there! AND NOW WE HAVE OUR STEP CONFIGURED.
+[4] - Now we need to have a release. So a Step gets converted into a release. On the same page, click on release (under project details), Click on 'Add release', select the package number and click 'Save'. Now click on 'Deploy To Staging!'
+
+That's about it.
+
+
+
+--Setting Up JENKINS as a build tool to get rid of Manual Deployment--
+----------------------------------------------------------------------
+
+[1] - So Now we'll let Jenkins, which is a continuous integration tool, build our project and make the NUGET file that we've been deploying manually! Jenkins can have your builds ready in three different ways: 
+	  - Periodic Builds (At a Particular time i.e. 4:30am)
+	  - Polling Builds (Checks your repo if code was changed after a particular time interval, over and over again. if yes, creates a new build. We'll use this one)
+	  - Triggered Builds (Creates a build when a developer checks-in code)
+[2] - The way we set up Polling Builds work is we specify a particular format in CRON Format i.e. (Minute Hour Day Month Weekday etc. */5 * * * * *). CRON btw is a Task Scheduler in Linux (i guess)
+[3] - Download jenkins from: https://jenkins.io/download/ , now open the Jenkins.msi, install it and it may require a reboot
+[4] - Once thats done, Jenkins will be running on localhost:8080. Let it download its required pluggins and create a user sign up by providing username, password, emailId etc. Login to Jenkins to see the Jenkins Dashboard
+[5] - Now before we proceed ahead, we need a git repo and a project in it! You can copy/paste the same test project that we've been playing with up till now. To create a git repo, open CMD and navigate to the directory and execute 'git init'. We may also need
+	  a remote repo - use github. We need to specify the REMOTE directory of the Repo in Jenkins
+[6] - Since we're using MSBuild to create the NUGET package for our project, we need MSBuild on Jenkins as well. Navigate to MANAGE JENKINS from DASHBOARD and click on MANAGE PLUGINS. Click on AVAILABLE section, select MSBuild and install it
+[7] - We also need to specify the URL for our local MsBuild to Jenkins. To do that, navigate back to MANAGE JENKINS page again, click on GLOBAL TOOL CONFIGURATION. You'll see MsBuild over there. Click on Add MsBuild and Provide the following details:
+	- Name it anything
+	- You can find the path of MsBuild it C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin\msbuild.exe
+	- Leave DEFAULT PARAMS blank and Check INSTALL AUTOMATICALLY and click on SAVE
+[8] - We may need to repeat the same step for GIT (path -> C:\Program Files\Git\bin\git.exe)
+[9] - Now that our MsBuild is set up, we need to create a new Project for Jenkins to operate on. To do that, navigate to Jenkins Dashboard and click on CREATE NEW JOB, provide a project name (try to name it the same as that of Octopus), select free style
+	  project and click ok.
+[10] - On the next page, provide a meaningful description and under the SOURCE CONTROL section, select git, provide git repo (the Remote One) and now under the BUILD section, select the MsBuild Name that you configured earlier, and provide the Build file as 
+	  ${WORKSPACE}\MyTestWebSite\MyTestWebSite.sln (You'll see your project to be cloned to C:\Program Files (x86)\Jenkins\workspace\ directory when we specified our git repo) - Specifying a local git repo did not work for me and i was stuck at multiple points.
+	  Also, specify COMMAND LINE ARGUMENTS to be: /p:RunOctoPack=true /p:OctoPackPackageVersion=1.1.${BUILD_NUMBER} /p:OctoPackPublishPackageToHttp=http://localhost/nuget/packages /p:OctoPackPublishApiKey=${OctopusApiKey}
+[11] - We need an OctopusApiKey which we get from Octopus. Same as we submitted a ThumbPrint for our Tentacle. To get that, go to octopus server, select your profile, select MY API KEYS and after that, select NEW API KEY. Provide Purpose, and you'll get a key
+[12] - You can paste that key right there OR you can go to MANAGE Jenkins, CONFIGURE SYSTEM, and under the Global properties section, you can copy paste the key (OctopusApiKey) and its value (API KEY) 
+[13] - Now if u go OCTOPUS SERVER and LIBRARY, you'll see a new release there. We can push it to release 
+[14] - To Automate this whole process when we recieve a new release, we can download OCTO.exe (which is a command line app), download it from: https://octopus.com/downloads, it will be just an exe so extract it to a folder named OCTO on C drive
+[15] - Not to use this Octo.exe, we need to create a Build Step on jenkins. Go to jenkins, to that project we configured, and its configuration, and to ADD BUILD STEP, select EXECUTE WINDOWS BATCH COMMAND and paste 
+
+"C:\Octo\Octo.exe" create-release --project "%JOB_NAME%" --version 1.1.%BUILD_NUMBER% --packageversion 1.1.%BUILD_NUMBER% --server http://localhost/ --apiKey %OctopusApiKey% --releaseNotes "Jenkins build [%BUILD_NUMBER%](http://localhost:8054/job/MyTestWebSite/%BUILD_NUMBER%)/" 
+
+- Notice the "%JOB_NAME%" entry here, that is why we must keep octopus and jenkins project name same.
+- Just an ending note: We added this extra build step in the end because Jenkins was only giving us a package and not an actual release. When we configured this build step, we can now have the jenkins build listed under release for our project on octopus server,
+  we still, however, need to CLICK 'DEPLOY TO STAGING' for actual deployment to staging since we want a manual deployment.
+
+
+ 
+
