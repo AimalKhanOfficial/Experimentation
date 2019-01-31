@@ -1,0 +1,7 @@
+\\OHFS07\Home\akhan\Desktop\AEP Prototype\TriggerAJob\TriggerAJob\bin\Debug\TriggerAJob.exe.config
+\\OHFS07\Home\akhan\Desktop\AEP Prototype\TriggerAJob\TriggerAJob\bin\Debug\TriggerAJob.exe
+\\OHFS07\Home\akhan\Desktop\AEP Prototype\TriggerAJob\TriggerAJob\bin\Debug\TriggerAJob.pdb
+\\OHFS07\Home\akhan\Desktop\AEP Prototype\TriggerAJob\TriggerAJob\obj\Debug\TriggerAJob.csprojAssemblyReference.cache
+\\OHFS07\Home\akhan\Desktop\AEP Prototype\TriggerAJob\TriggerAJob\obj\Debug\TriggerAJob.csproj.CoreCompileInputs.cache
+\\OHFS07\Home\akhan\Desktop\AEP Prototype\TriggerAJob\TriggerAJob\obj\Debug\TriggerAJob.exe
+\\OHFS07\Home\akhan\Desktop\AEP Prototype\TriggerAJob\TriggerAJob\obj\Debug\TriggerAJob.pdb
