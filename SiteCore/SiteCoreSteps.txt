@@ -1,0 +1,46 @@
+PreRequisites for Installing SiteCore Instance:
+
+[1] - URL Rewrite 2.1 (https://www.iis.net/downloads/microsoft/url-rewrite)
+[2] - Microsoft Web Deploy 3.6 for hosting servers (https://www.microsoft.com/en-us/download/confirmation.aspx?id=43717)
+[3] - Microsoft® SQL Server® Data-Tier Application Framework (17.1 DacFx) - (https://www.microsoft.com/en-us/download/details.aspx?id=55255)
+[4] - Apache Solr (v6.6.1) from http://archive.apache.org/dist/lucene/solr/6.6.1/ - (Here are the steps:)
+		* Download the solr-6.6.1.zip and unzip on your local C: dir
+		* For Solr, we'll need to set up JRE as well (Env variable JAVA_HOME)
+		* Set up SSL for Solr: Steps provided at: https://lucene.apache.org/solr/guide/6_6/enabling-ssl.html
+			> install openssl from: https://code.google.com/archive/p/openssl-for-windows/downloads
+			> Unzip and copy all the files in the bin folder including openssl.exe(All file of bin folder) 
+			> Goto to the folder where you installed JDK for me it’s C:\Program Files\Java\jdk.<version>\bin 
+			> Paste all the files you copied from Openssl’s bin folder to the Jdk folder. Try "openssl -v" and see if it provides you with its version
+			> Create a new Folder under C: dir named "SiteCoreResources". This is where we'll keep all of our SSL certificates as well as SiteCore resources
+			  so open cmd and do a "C:\SiteCoreResources"
+			> Run the following command: (Remember to customize the YOUR_MACHINE_IP_ADDR with your machine's IP Address. This is the local system's IP that 
+			  solr is supposed to be running on) - Running this command should give us a "solr-ssl.keystore.jks" file
+			  
+			  keytool -genkeypair -alias solr-ssl -keyalg RSA -keysize 2048 -keypass secret -storepass secret -validity 9999 -keystore solr-ssl.keystore.jks -ext SAN=DNS:localhost,IP:<YOUR_MACHINE_IP_ADDR>,IP:127.0.0.1 -dname "CN=localhost, OU=Organizational Unit, O=Organization, L=Location, ST=State, C=Country"
+			
+			> Run the following command: (Make sure to provide pass "secret" for all prompts) - We'll get a file called "solr-ssl.keystore.p12"
+			
+			  keytool -importkeystore -srckeystore solr-ssl.keystore.jks -destkeystore solr-ssl.keystore.p12 -srcstoretype jks -deststoretype pkcs12
+			
+			> Run the following command to get a .pem file. (Provide 'secret' as passwords on every prompt.)
+			
+			  openssl pkcs12 -in solr-ssl.keystore.p12 -out solr-ssl.pem
+			
+			> Now copy all of these three files ("solr-ssl.pem", "solr-ssl.keystore.jks", "solr-ssl.keystore.p12") to  "C:\solr-6.6.1\bin\etc" and double click 
+			  and install file "solr-ssl.keystore.p12"
+			  
+		* Now we need to Edit the "C:\solr-6.6.1\bin\solr.in.cmd" file to make sure it runs as a service. Open the file by clicking edit and search for: 
+		  "REM set SOLR_SSL_KEY_STORE". Make sure the settings looks like:
+			
+			set SOLR_SSL_KEY_STORE=etc/solr-ssl.keystore.jks
+			set SOLR_SSL_KEY_STORE_PASSWORD=secret
+			set SOLR_SSL_TRUST_STORE=etc/solr-ssl.keystore.jks
+			set SOLR_SSL_TRUST_STORE_PASSWORD=secret
+			REM Require clients to authenticate
+			set SOLR_SSL_NEED_CLIENT_AUTH=false
+			REM Enable clients to authenticate (but not require)
+			set SOLR_SSL_WANT_CLIENT_AUTH=false
+		
+		* We can now test the env by starting solr. We can do that by executing "solr start" on cmd. (if "solr" is not recognized, update the PATH system env
+		  variable and append the SOLR\bin path to it)
+		  
