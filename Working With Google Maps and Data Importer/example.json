@@ -1,8 +1,0 @@
-x = [
-	{ 
-		'lat': '-42.783', 
-		'long': '122.27', 
-		'pincolor': 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-	}
-];
-
