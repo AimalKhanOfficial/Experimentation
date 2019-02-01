@@ -20,13 +20,13 @@
   </head>
   <body>
     <div id="map"></div>
-	<script type="text/javascript" src="./MyMarkersData.json"></script>
+	<script type="text/javascript" src="./example.json"></script>
     <script>
-	  console.log(markersSet);
+	  console.log(x);
       function initMap() {
 	  
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 5,
+          zoom: 3,
           center: new google.maps.LatLng(39, -95),
         });
 
@@ -34,26 +34,20 @@
 
 		var marker, i;
 	
-		for (i = 0; i < markersSet.length; i++) {  
+		for (i = 0; i < x.length; i++) {  
 			marker = new google.maps.Marker({
-				position: new google.maps.LatLng(markersSet[i].Latitude, markersSet[i].Longitude),
+				position: new google.maps.LatLng(x[i].lat, x[i].long),
 				map: map
 			});
-			marker.setIcon(markersSet[i].PinColor);
+			marker.setIcon(x[i].pincolor);
 			google.maps.event.addListener(marker, 'click', (function(marker, i) {
 				return function() {
-				infowindow.setContent(markersSet[i].MarkerDesc);
+				infowindow.setContent('Some Text');
 				infowindow.open(map, marker);
 				}
 			})(marker, i));
 		}
       }
-	  
-	  //setInterval(refreshPageConstantly, 100000);
-	  
-	  //function refreshPageConstantly() {
-		//location.reload();
-	  //}
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap"
     async defer></script>
