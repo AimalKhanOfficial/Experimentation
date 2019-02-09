@@ -1,0 +1,10 @@
+To configure Solr as a Windows Service, use NSSM. (https://nssm.cc/)
+
+- Download the NSSM app from: https://nssm.cc/download
+- Extract to a location i.e. C:\nssm-2.24
+- Open CMD, and execute:
+	"C:\nssm-2.24\win64\nssm" install solr6
+- A NSSM Service installer popup window will appear with options such as Path, Startup Dir and Arguments.
+- For the "Path" field, we need to provide the URL for Solr.cmd, its "C:\solr-6.6.1\bin\solr.cmd" in my case.
+- Set "Arguments" to be "start -f -p 8983" (-f means to run Solr in foreground, -p 8983 specified the port)
+- Click "Install Service"
