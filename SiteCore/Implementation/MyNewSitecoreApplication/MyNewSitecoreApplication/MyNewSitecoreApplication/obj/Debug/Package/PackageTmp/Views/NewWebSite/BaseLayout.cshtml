@@ -1,0 +1,29 @@
+﻿@using Sitecore.Mvc
+@using Sitecore.Mvc.Analytics.Extensions
+@using Sitecore.Mvc.Presentation
+@model RenderingModel
+@{
+  Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Static WebSite</title>
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    
+    @Html.Sitecore().VisitorIdentification()
+</head>
+<body>
+    <div>
+        <nav class="navbar navbar-dark bg-dark">
+            <!-- Navbar content -->
+            <a class="navbar-brand" href="#">@Sitecore.Globalization.Translate.TextByDomain("MyDomainDictionary", "myKeyName")</a>
+        </nav>
+        <br/>
+        <p>@Sitecore.Globalization.Translate.TextByDomain("MyDomainDictionary", "myKeyName")</p>
+        <br/>
+        @Html.Sitecore().Placeholder("main")
+    </div>
+    <script src="~/js/bootstrap.min.js"></script>
+</body>
+</html>

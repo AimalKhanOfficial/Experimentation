@@ -1,0 +1,25 @@
+﻿@using Sitecore.Mvc
+@using Sitecore.Mvc.Presentation
+@using Sitecore.Mvc.Extensions
+@model RenderingModel
+@{
+    Sitecore.Data.Fields.MultilistField options = Model.Item.Fields["AllJobs"];
+}
+
+<div class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
+        Select option:
+        @using (Html.EditFrame(Model.Item.Paths.FullPath, "Languages", "EditTasks", "Edit Languages here", null, null))
+        {
+            <select class="form-control form-control-lg">
+                @foreach (Sitecore.Data.Items.Item jobOption in options.GetItems())
+                {
+                    <option>@jobOption.Name</option>
+                }
+            </select>
+        }
+    </div>
+    <div class="col-sm-4"></div>
+</div>
+

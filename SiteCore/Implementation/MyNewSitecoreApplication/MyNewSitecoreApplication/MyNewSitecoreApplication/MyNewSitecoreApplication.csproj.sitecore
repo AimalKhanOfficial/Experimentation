@@ -1,0 +1,17 @@
+﻿<Project>
+  <PropertyGroup>
+    <Site Server="xp0.sc" UserName="sitecore\admin" IsRemoteSitecore="True" />
+  </PropertyGroup>
+  <File Include="/Views/NewWebSite/MasterLayout.cshtml" FileTimestamp="0" FileSize="0" ServerTimestamp="0" ServerFileSize="0">
+    <Item DatabaseName="master">{151F96F7-52D6-4056-A98F-2922FB8CA838}</Item>
+  </File>
+  <File Include="/Views/NewWebSite/Base.cshtml" FileTimestamp="0" FileSize="0" ServerTimestamp="0" ServerFileSize="0">
+    <Item DatabaseName="master">{831F2DF8-35F6-415E-8B10-5E3E892A4A17}</Item>
+  </File>
+  <File Include="Views\NewWebSite\BaseLayout.cshtml" FileTimestamp="0" FileSize="0" ServerTimestamp="0" ServerFileSize="0">
+    <Item DatabaseName="master">{F2A79014-E024-4EB2-AF56-2FE9014A5BA9}</Item>
+  </File>
+  <File Include="/Views/NewWebSite/BaseLayout.cshtml" FileTimestamp="0" FileSize="0" ServerTimestamp="0" ServerFileSize="0">
+    <Item DatabaseName="master">{F2A79014-E024-4EB2-AF56-2FE9014A5BA9}</Item>
+  </File>
+</Project>

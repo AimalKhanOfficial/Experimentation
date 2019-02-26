@@ -1,0 +1,8 @@
+﻿@model MyNewSitecoreApplication.Models.ColorContainer
+
+<p>My colors UI:</p>
+@foreach (var item in Model.Colors)
+{
+    <p>Color: @item["ColorName"]</p> 
+    <br/>
+}
