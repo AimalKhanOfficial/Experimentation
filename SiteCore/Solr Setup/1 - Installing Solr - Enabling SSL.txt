@@ -1,0 +1,43 @@
+PreRequisites for Installing SiteCore Instance:
+
+[1] - URL Rewrite 2.1 (https://www.iis.net/downloads/microsoft/url-rewrite)
+[2] - Microsoft Web Deploy 3.6 for hosting servers (https://www.microsoft.com/en-us/download/confirmation.aspx?id=43717)
+[3] - Microsoft® SQL Server® Data-Tier Application Framework (17.1 DacFx) - (https://www.microsoft.com/en-us/download/details.aspx?id=55255)
+[4] - Apache Solr (v6.6.1) from http://archive.apache.org/dist/lucene/solr/6.6.1/ - (Here are the steps:)
+		* Download the solr-6.6.1.zip and unzip on your local C: dir
+		* For Solr, we'll need to set up JRE as well (Env variable JAVA_HOME)
+		* Set up SSL for Solr: Steps provided at: https://lucene.apache.org/solr/guide/6_6/enabling-ssl.html
+			> install openssl from: https://code.google.com/archive/p/openssl-for-windows/downloads
+			> Unzip and copy all the files in the bin folder including openssl.exe(All file of bin folder) 
+			> Goto to the folder where you installed JDK for me it’s C:\Program Files\Java\jdk.<version>\bin 
+			> Paste all the files you copied from Openssl’s bin folder to the Jdk folder. Try "openssl -v" and see if it provides you with its version
+			> Follow the instructions on: https://www.oshyn.com/blogs/2017/november/how-to-install-solr-with-ssl-on-windows-10
+			> Run the following command on a Powershell window: 
+				
+			  New-SelfSignedCertificate -CertStoreLocation cert:\LocalMachine\My -DnsName "localhost", "127.0.0.1" -FriendlyName "SolrCert" -NotAfter (Get-Date).AddYears(10)
+			
+			> Search for "Manage computer certificates" on Win10. Click on "Personal" option from the left Pane, then "Certificates" on the right pane, you'll notice a newly added cert there
+			  with a friendly name "SolrCert"
+			  
+			> Right click on the newly created cert and copy it to the "Trusted Root Certification Authorities/Certificates" 
+			
+			> Now export the SolrCert with the following options:
+				- "Yes, export the private key", Click Next
+				- Check only "Include all certificates in the certification path if possible" option and click next
+				- Provide a password ("secret" in this case)
+				
+			> Export the cert to a desired location named "solr_ssl_cert.pfx"
+			
+		* Now we need to Edit the "C:\solr-6.6.1\bin\solr.in.cmd" file to make sure it runs as a service. Open the file by clicking edit and search for: 
+		  "REM set SOLR_SSL_KEY_STORE". Make sure the settings looks like:
+			
+			set SOLR_SSL_KEY_STORE=C:/apache/solr_ssl_cert.pfx
+			set SOLR_SSL_KEY_STORE_PASSWORD=secret
+			set SOLR_SSL_KEY_STORE_TYPE=PKCS12
+			set SOLR_SSL_TRUST_STORE=C:/apache/solr_ssl_cert.pfx
+			set SOLR_SSL_TRUST_STORE_PASSWORD=secret
+			set SOLR_SSL_TRUST_STORE_TYPE=PKCS12
+		
+		* We can now test the env by starting solr. We can do that by executing "solr start" on cmd. (if "solr" is not recognized, update the PATH system env
+		  variable and append the SOLR\bin path to it)
+		  
