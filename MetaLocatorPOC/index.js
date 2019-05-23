@@ -3,6 +3,7 @@ var myNavBarText = `
     <li role='presentation' class='active'><a href='#'>Home</a></li>
     <li role='presentation'><a href='#'>Profile</a></li>
     <li role='presentation'><a href='#'>Messages</a></li>
+    <li role='presentation'><a href='#'>Messages3</a></li>
 </ul>`;
 
 document.getElementById('codeArea').innerHTML = myNavBarText;
