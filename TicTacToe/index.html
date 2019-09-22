@@ -4,8 +4,37 @@
         <title>Tic Tac Toe</title>
         <meta charset="utf-8"/>
     </head>
-    
-    <script>
-        var playerTurnAttr = falsy
-    </script>
+    <body>
+        <div id="ticTacToe">
+            
+        </div>
+        <script>
+            var secondPlayerTurn = undefined
+            var playingPlane = [
+                [
+                    11,
+                    21,
+                    31
+                ], 
+                [
+                    12,
+                    22,
+                    32
+                ], 
+                [
+                    13,
+                    23,
+                    33 
+                ]
+            ]
+            var ticTacToeDivRef = document.getElementById("ticTacToe");
+            playingPlane.forEach(row => {
+                row.forEach(elem => {
+                    console.log(elem);
+                    ticTacToeDivRef.innerHTML += "<input type='checkbox' id='"+elem+"'/>";
+                });
+                ticTacToeDivRef.innerHTML += "</br>";
+            });
+        </script>
+    </body>
 </html>
