@@ -4,10 +4,16 @@ const returnPromise = (flag) => {
     });
 }
 
+const someOtherFunction = (res) => {
+    console.log(`someOtherFunction::${res}`);
+}
+
 returnPromise(true)
 .then(res => {
     console.log(res);
+    return res;
 })
+.then(someOtherFunction)
 .catch(err => {
     console.log(err);
 }) 
