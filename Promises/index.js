@@ -4,8 +4,8 @@ const returnPromise = (flag) => {
     });
 }
 
-const someOtherFunction = (res) => {
-    console.log(`someOtherFunction::${res}`);
+const someOtherFunction = (res, secondParam) => {
+    console.log(`someOtherFunction::${res}, secondParam::${secondParam}`);
 }
 
 returnPromise(true)
