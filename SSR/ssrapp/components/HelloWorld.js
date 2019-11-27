@@ -21,6 +21,6 @@ export default class HelloWorld extends React.Component {
 
     onButtonClick = () => {
         console.log('>>>> onButtonClick');
-        alert('Clicked');
+        alert('Clicked' + window.location.href);
     }
 }

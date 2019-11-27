@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon --exec babel-node app.js"
+    "start": "nodemon --exec babel-node app.js",
+    "build-dev": "webpack --display-error-details --progress --hot --watch --config webpack.config.js"
   },
   "dependencies": {
     "and": "0.0.3",
@@ -13,10 +14,12 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
+    "net": "^1.0.2",
     "nodemon": "^1.19.4",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-scripts": "^3.2.0"
+    "react-scripts": "^3.2.0",
+    "webpack": "^4.41.2"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
@@ -24,6 +27,7 @@
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.5"
+    "babel-loader": "^8.0.5",
+    "webpack-cli": "^3.3.10"
   }
 }
