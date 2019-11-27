@@ -7,8 +7,7 @@ var React = require('react');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  let helloWorldComponent = renderToString(<HelloWorld/>);
-  res.render('index', { title: 'Express', helloWorldComponent });
+  res.render('index', { title: 'Express', helloWorldComponent: renderToString(<HelloWorld/>) });
 });
 
 module.exports = router;
