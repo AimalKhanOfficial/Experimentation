@@ -1,0 +1,1 @@
+webpackHotUpdate(0,{295:function(e,t,n){"use strict";n.r(t),function(e){var t=n(136),r=n(137),o=(n(300),n(49).Router()),c=n(71);o.get("/",(function(e,n,o){n.render("index",{title:"Express",helloWorldComponent:Object(r.renderToString)(c.createElement(t.a,null))})})),e.exports=o}.call(this,n(296)(e))},300:function(e,t,n){"use strict"}});
