@@ -1,0 +1,1 @@
+The react component is rendered inside -> Routes/Index.js
