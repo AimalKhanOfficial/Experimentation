@@ -21,7 +21,19 @@ List the available Resource Groups by:
 Moving onto creation of a virtual network and a subnet, run:  
 ```az network vnet create --name "DemoVNet-Aimal" --resource-group "DemoRS-Aimal" --address-prefix "10.0.1.0/26" --subnet-name "DemoSubnet-Aimal" --subnet-prefix "10.0.1.0/27"```
 
-**The address prefix is in a CIDR (Classless internet domain routing) format** 
+**Note: The address prefix is in a CIDR (Classless internet domain routing) format** 
 
-List all available vnets via:
+List all available vnets via:  
 ```az network vnet list -o table```
+
+Creation of a public IP address:  
+```az network public-ip create --name "DemoPublicIP-Aimal" --resource-group "DemoRS-Aimal"```
+
+List all available public IPs via:  
+```az network public-ip list -o table```
+
+Creation of a NSG:  
+```az network nsg create --name "DemoNSG-Aimal" --resource-group "DemoRS-Aimal"```
+
+List all available NSG via:  
+```az network nsg list -o table```
