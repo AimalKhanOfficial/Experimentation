@@ -37,3 +37,11 @@ Creation of a NSG:
 
 List all available NSG via:  
 ```az network nsg list -o table```
+
+Creation of a Network Interface:  
+```az network nic create --name "DemoNIC-Aimal" --resource-group "DemoRS-Aimal" --vnet-name "DemoVNet-Aimal" --subnet "DemoSubNet-Aimal" --public-ip-address "DemoPublicIP-Aimal" --Network-security-group "DemoNSG-Aimal"```
+
+List all available NIC via:  
+```az network nic list -o table```
+
+
