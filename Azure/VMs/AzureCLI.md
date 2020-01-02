@@ -11,3 +11,9 @@ Set the subscription from a list of available subscription: (only required incas
 
 To view the selected subscription:  
 ```az account show```
+
+Starting with the main process, create a resouce group by running:
+```az group create --name "DemoRS-Aimal" --location "centralus"```
+
+List the available Resource Groups by:
+```az group list -o table```
