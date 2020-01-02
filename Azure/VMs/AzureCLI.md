@@ -61,3 +61,8 @@ Finally, open a port to connect to it:
 
 ***Optional: Connect to your VM via:***  
 ```mstsc /v:publicIpAddress```
+
+***Clean Up**
+Delete a resource group via:  
+```az group delete --name "DemoRS-Aimal"```
+
