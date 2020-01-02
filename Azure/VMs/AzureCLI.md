@@ -12,8 +12,16 @@ Set the subscription from a list of available subscription: (only required incas
 To view the selected subscription:  
 ```az account show```
 
-Starting with the main process, create a resouce group by running:
+Starting with the main process, create a resouce group by running:  
 ```az group create --name "DemoRS-Aimal" --location "centralus"```
 
-List the available Resource Groups by:
+List the available Resource Groups by:  
 ```az group list -o table```
+
+Moving onto creation of a virtual network and a subnet, run:  
+```az network vnet create --name "DemoVNet-Aimal" --resource-group "DemoRS-Aimal" --address-prefix "10.0.1.0/26" --subnet-name "DemoSubnet-Aimal" --subnet-prefix "10.0.1.0/27"```
+
+**The address prefix is in a CIDR (Classless internet domain routing) format** 
+
+List all available vnets via:
+```az network vnet list -o table```
