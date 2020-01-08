@@ -18,6 +18,8 @@ Main topics:
 * Generalizing/Deprovisioning an Image (using sysprep/waagent - reseting service specific data: To fecilitate future deployments)  
     * Take backup of a VM first because generalization is permanent (and you might lose the existing data)  
 * Azure DevTest Labs (Spinning up multiple VMs using a formula - This might be renamed as Azure Lab Services now)  
+* Azure Policies are used to restrict actions i.e. Restricting users creating resources outside of a certain location. etc. Search for 'Policy' on the azure portal, it also has a list of build-in polices to choose from.
+
 
 
 Questions:  
