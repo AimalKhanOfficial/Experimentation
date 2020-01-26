@@ -4,6 +4,12 @@
  * This is a general purpose Gradle build.
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds
  */
+
+apply plugin: 'scala'
+dependencies{
+    compile "org.scala-lang:scala-library:2.11.7"
+}
+
 task basicTask {
     println 'This is my basic task!'
 }
@@ -15,4 +21,11 @@ task secondTask {
 task runAll {
     dependsOn basicTask,
     secondTask
+}
+
+task thirdTask {
+    dependsOn runAll
+    doLast {
+        println 'This is my fifth task!'
+    }
 }
