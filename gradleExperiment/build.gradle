@@ -7,3 +7,12 @@
 task basicTask {
     println 'This is my basic task!'
 }
+
+task secondTask {
+    println 'This is my second task!'
+}
+
+task runAll {
+    dependsOn basicTask,
+    secondTask
+}
