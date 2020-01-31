@@ -11,5 +11,9 @@ Vault is an open-source tool for secret management made up of several components
 Steps to spin up a Vault Dev Server:  
 * Download Vault's Zip (comes as a single executable file)  
 * execute "vault server -dev"  
-* In a new cmd window: execute "set VAULT_ADDR="http://127.0.0.1:8200"" (use "export" in bash)  
+* In a new cmd window: execute "set VAULT_ADDR=http://127.0.0.1:8200" (use "export" in bash)  
 * Try navigating to: http://127.0.0.1:8200/ui/vault/auth and you should see a login screen  
+* List all the engines by: vault secrets list  
+* The kv engine has a default secret/<anyName> path. An engine type can be mounted for different (multiple) paths as well. The "vault secrets enable -path=newPath kv" command is used to create a new path for KV type engine named "newPath"  
+* Use "vault kv put secret/mysecrets key=pair" command to add a secret to vault using the KV engine. The key here is "key" while the secret is "pair"  
+* Use "vault kv get -format=json secret/mysecrets" to retrieve what you just saved (in the json format. This is what an API call would also retrieve)  
