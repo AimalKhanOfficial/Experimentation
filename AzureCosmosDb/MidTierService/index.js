@@ -3,16 +3,22 @@ var app = express();
 var wrapper = require('./wrapper/CosmosDbWrapper');
 var port = '2202';
 
-app.get('/', (req, res, next) => {
-    res.json('App listening on port 2202');
+var bodyParser = require('body-parser')
+app.use( bodyParser.json());       
+app.use(bodyParser.urlencoded({
+  extended: true
+})); 
+
+app.post('/', async (req, res, next) => {
+    var dbRes = await wrapper.set(req.body);
+    wrapper.closeConnection();
+    res.json(dbRes);
 });
 
-app.post('/api/set', (req, res, next) => {
-    res.json('Set called.');
-});
-
-app.get('/api/get', async (req, res, next) => {
-    res.json(await wrapper.get());
+app.get('/', async (req, res, next) => {
+    var dbRes = await wrapper.get();
+    wrapper.closeConnection();
+    res.json(dbRes);
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}.`));
