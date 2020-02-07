@@ -8,9 +8,11 @@ app.get('/', (req, res, next) => {
 });
 
 app.post('/api/set', (req, res, next) => {
-    console.log('calling set');
-    wrapper.set();
-    res.json('Post called.');
+    res.json('Set called.');
+});
+
+app.get('/api/get', async (req, res, next) => {
+    res.json(await wrapper.get());
 });
 
 app.listen(port, () => console.log(`App listening on port ${port}.`));

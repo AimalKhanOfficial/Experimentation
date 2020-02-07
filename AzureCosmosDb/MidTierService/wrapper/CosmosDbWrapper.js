@@ -2,20 +2,18 @@ var mongoose = require('mongoose');
 var env = require('dotenv').config();
 
 var set = (mfeKey, tro) => {
-    connectToCosmosDb()
-    .then(() => console.log('Connection to CosmosDB successful'))
-    .then(() => {
-        mongoose.connection.db.collection("TROs", function(err, collection){
-            collection.find({}).toArray(function(err, data){
-                console.log(data);
-            })
-        });
-    })
-    .catch((err) => console.error(err));
+    console.log('Set called.');
 }
 
-var get = () => {
-    console.log('Get called inside wrapper');
+var get = async () => {
+    return await connectToCosmosDb()
+    .then(getData)
+    .catch((err) => err);
+}
+
+var getData = async () => {
+    var collection = mongoose.connection.db.collection(process.env.COSMOSDB_COLLECTION_NAME);
+    return await collection.find({}).toArray();
 }
 
 var connectToCosmosDb = () => mongoose.connect("mongodb://"+process.env.COSMOSDB_HOST+":"+process.env.COSMOSDB_PORT+"/"+process.env.COSMOSDB_DBNAME+"?ssl=true&replicaSet=globaldb", {
