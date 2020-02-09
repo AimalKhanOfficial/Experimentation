@@ -1,6 +1,8 @@
 ## CosmosDb Access Control Experiment
 
 * This app serves as the mid-tier app for maintaining DB secrets and providing a way for apps to acquire access tokens
+* https://docs.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-resources
+* https://stackoverflow.com/questions/51858887/cosmosdb-userpermission-with-resourcepartitionkey-not-enforced
 
 ### Environment Set up - Notes
 * Clone the repo and import into Postman: https://github.com/MicrosoftCSA/documentdb-postman-collection. These are predefined templates to work with CosmosDB (DocumentDB is CosmosDb with SQL API, i guess :p)
@@ -20,6 +22,11 @@
     * Expectation: should be allowed to `SET` an object
     * Actual: **Invalid Case**
     > You can associate only one permission to a particular resource for a user. For example, MarketingCollection with _rid xynsa== can only be associated with one permission for user JanetSmith@contoso.com. An attempt to add another permission to MarketingCollection for Janet results in an error (409 Conflict). (https://docs.microsoft.com/en-us/rest/api/cosmos-db/permissions)
+4. User has an ALL permission mode but not for a particular partition key and tries to set an different partition key object 
+    * Steps:  
+        * Create User: https://{{DocumentDBHost}}/dbs/CosmosDbId/users (with body: `{ "id": "team2" }`)
+        * create permission: https://{{DocumentDBHost}}/dbs/CosmosDbId/users/team2/permissions (with body: `{ "id": "any_name_for_permission", "permissionMode": "All", "resource": "dbs/CosmosDbId/colls/TROs", "resourcePartitionKey":  [ "team2" ])} `)
+        * initiate a read call to SET an object with teamName set to `team2` and obj name set to `team2` as well. **This didn't work. Maybe the this restriction works when the partition key=team2? need more info**
 
 ### Partition Key
 Used for logical partitioning of the data. (find more: https://stackoverflow.com/questions/45067692/azure-cosmos-db-understanding-partition-key)
