@@ -2,7 +2,7 @@ CosmosDb Access Control Experiment
 
 * This app serves as the mid-tier app for maintaining DB secrets and providing a way for apps to acquire access tokens
 
-### Create a User
+### Environment Set up - Notes
 * Clone the repo and import into Postman: https://github.com/MicrosoftCSA/documentdb-postman-collection. These are predefined templates to work with CosmosDB (DocumentDB is CosmosDb with SQL API, i guess :p)
 * Post request to `https://{databaseaccount}.documents.azure.com/dbs/{db-id}/users`. The body needs to have a user id i.e. team1 etc.
 * Once the user's created, create a permission for it. Permissions are either `read` (The user can only read the contents of the resource but cannot perform write, update, or delete operations on the resource.) or `all` (The user has full permission on the resource).

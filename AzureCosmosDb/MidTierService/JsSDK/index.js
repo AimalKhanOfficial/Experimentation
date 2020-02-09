@@ -10,12 +10,12 @@ app.use(bodyParser.urlencoded({
 })); 
 
 app.post('/', async (req, res, next) => {
-  let response = await wrapper.set(req.body);
-  res.status(response.status).json(response.status);
+  let response = await wrapper.set(req.body.teamName, req.body.tro);
+  res.status(response.status).json(response.message);
 });
 
 app.get('/', async (req, res, next) => res.status(200).json(await wrapper.get()));
 
-app.post('/users', async (req, res, next) => res.status(200).json(await wrapper.isUserAuthorized(req.body.team)));
+app.post('/checkUserValidity', async (req, res, next) => res.status(200).json(await wrapper.isUserAuthorized(req.body.teamName)));
 
 app.listen(port, () => console.log(`App listening on port ${port}.`));

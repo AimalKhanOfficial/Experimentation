@@ -42,42 +42,47 @@ var isUserValid = async (mfeKeyName) => {
     }
 }
 
-var getUserPermissions = async (userRef) => {
-    return await userRef.user.permissions.readAll().fetchAll();
-}
+var getUserPermissions = async (userRef) => await userRef.user.permissions.readAll().fetchAll();
+
+var lookUpPermissionModeAll = (permissions) => permissions.some(a => a.permissonMode === 'All');
+
+var extractPermissionResources = (hugeObj) => hugeObj['resources']; 
 
 var isUserAuthorized = async (mfeKeyName) => {
     try {
         //Check if user exists
         let userCheck = await isUserValid(mfeKeyName);
         if (userCheck.status) {
-            //get all user permissions
-            let userPermissions = await getUserPermissions(userCheck.body);
-            console.log(userPermissions);
+            //get all user permissions 
+            let allAvailablePermissions = await getUserPermissions(userCheck.body);
+
+            //check for 'All' permission mode
+            return lookUpPermissionModeAll(extractPermissionResources(allAvailablePermissions));
         }
         else {
             //User is invalid
+            console.log('>> User Not found.');
             return false;
         }
     } catch (err) {
         console.log(`>> Err in isUserAuthorized: ${err}`);
+        return false
     }
-    return true;
 }
 
 var set = async (mfeName, troObject) => {
     console.log(`Querying container:\n${config.container.id}`);
     try {
-        if (!isUserAuthorized(mfeName)) return ({ status: false, message: `Invalid or Unauthorized user` });
+        if (! (await isUserAuthorized(mfeName))) return ({ status: 403, message: `Invalid or Unauthorized user` });
         const { item } = await client.database(databaseId).container(containerId).items.upsert(troObject);
         return ({
-            status: true, 
+            status: 200, 
             message: `Created TRO item with id: ${item.id}`
         });
     } catch(err) {
         console.log(`>>> Err: ${err}`);
         return ({
-            status: false, 
+            status: 500, 
             message: `Something went wrong, try later.`
         });
     }
