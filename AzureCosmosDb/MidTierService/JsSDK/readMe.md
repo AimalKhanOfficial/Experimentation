@@ -19,7 +19,7 @@
 3. User with both `read` and `all` permission modes tries to `SET` an object 
     * Expectation: should be allowed to `SET` an object
     * Actual: **Invalid Case**
-    >> You can associate only one permission to a particular resource for a user. For example, MarketingCollection with _rid xynsa== can only be associated with one permission for user JanetSmith@contoso.com. An attempt to add another permission to MarketingCollection for Janet results in an error (409 Conflict). (https://docs.microsoft.com/en-us/rest/api/cosmos-db/permissions)
+    > You can associate only one permission to a particular resource for a user. For example, MarketingCollection with _rid xynsa== can only be associated with one permission for user JanetSmith@contoso.com. An attempt to add another permission to MarketingCollection for Janet results in an error (409 Conflict). (https://docs.microsoft.com/en-us/rest/api/cosmos-db/permissions)
 
 ### Partition Key
 Used for logical partitioning of the data. (find more: https://stackoverflow.com/questions/45067692/azure-cosmos-db-understanding-partition-key)
