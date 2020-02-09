@@ -26,6 +26,19 @@ var get = async () => {
     }
 };
 
+var set = async (troObject) => {
+    console.log(`Querying container:\n${config.container.id}`);
+    try {
+        const { item } = await client.database(databaseId).container(containerId).items.upsert(troObject);
+        console.log(`Created TRO item with id:\n${item.id}\n`);
+        return true;
+    } catch(err) {
+        console.log(err);
+        return false;
+    }
+};
+
 module.exports = {
-    get
+    get,
+    set
 }

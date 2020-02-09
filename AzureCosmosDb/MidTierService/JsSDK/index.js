@@ -9,13 +9,8 @@ app.use(bodyParser.urlencoded({
   extended: true
 })); 
 
-app.post('/', async (req, res, next) => {
-    res.json('Up and running!');
-});
+app.post('/', async (req, res, next) => await wrapper.set(req.body) ? res.status(200).json('Item was created.') : res.status(500).json('Something went wrong, try again later.'));
 
-app.get('/', async (req, res, next) => {
-    var dbRes = await wrapper.get();
-    res.json(dbRes);
-});
+app.get('/', async (req, res, next) => res.status(200).json(await wrapper.get()));
 
 app.listen(port, () => console.log(`App listening on port ${port}.`));
