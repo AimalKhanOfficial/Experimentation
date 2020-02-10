@@ -1,10 +1,22 @@
 var mongoose = require('mongoose');
 var troModel = require('./TROsSchema');
+var axiosWrapper = require('./AxiousWrapper');
 require('dotenv').config();
 
-var set = async (tro) => {
+const isUserValid = async (teamName) => {
+    try {
+        let users = await connectToCosmosDb();
+        console.log(users.connection.db.collection(process.env.COSMOSDB_COLLECTION_NAME).s.db.serverConfig);
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+var set = async (mfeName, tro) => {
     return await connectToCosmosDb()
-    .then(() => saveData(tro))
+    .then(() => saveData(mfeName, tro))
     .catch((err) => {
         console.log('Err in connection: ', err);
     });
@@ -22,13 +34,45 @@ var getData = async () => {
     return await getCollectionRef().find({}).toArray();
 }
 
-var saveData = async (troParam) => {
+var lookUpPermissionModeAll = (permissions) => permissions.some(a => a.permissionMode === 'All');
+
+const isUserAuthorized = async (teamName) => {
     try {
-        await getCollectionRef().insertOne(new troModel(troParam));
-        return true;
+        let userCheck = await axiosWrapper.checkUserAndFetchPermissions(teamName);
+        if (userCheck.status === 200) {
+            //check for 'All' permission mode
+            return lookUpPermissionModeAll(userCheck.permissionsArr);
+        }
+        else {
+            console.log('>> User Not found or unauthorized, status: ', userCheck.status);
+            return false;
+        }
+    } catch (err) {
+        console.log(`>> Err in isUserAuthorized: ${err}`);
+        return false
+    }
+}
+
+//The update/overwrite doesn't quite work. Need more research/time.
+var saveData = async (mfeName, troParam) => {
+    try {
+        if (!(await isUserAuthorized(mfeName))) {
+            return ({
+                status: 403,
+                message: 'Invalid or unauthorized user'
+            });
+        }
+        await getCollectionRef().insertOne(new troModel({...troParam, id: 'someUniqueId'}));
+        return ({
+            status: 200,
+            message: 'Document created.'
+        });
     } catch (err) {
         console.log(err);
-        return false;
+        return ({
+            status: 500,
+            message: 'Something went wrong, try again later.'
+        });;
     } 
 }
 
@@ -56,5 +100,6 @@ mongoose.connection.on("open", function(){
 module.exports = {
     set, 
     get,
-    closeConnection
+    closeConnection,
+    isUserValid
 }
