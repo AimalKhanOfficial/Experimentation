@@ -78,8 +78,11 @@ var isUserAuthorized = async (mfeKeyName) => {
 var set = async (mfeName, troObject) => {
     console.log(`Querying container: ${config.container.id}`);
     try {
-        if (! (await isUserAuthorized(mfeName))) return ({ status: 403, message: `Invalid or Unauthorized user` });
-        const { item } = await client.database(databaseId).container(containerId).items.upsert(troObject);
+        if (!(await isUserAuthorized(mfeName))) return ({ status: 403, message: `Invalid or Unauthorized user` });
+
+        //https://stackoverflow.com/a/48778551/6281489: Check this answer for passing id to upsert, keeping partition key in mind
+        const { item } = await client.database(databaseId).container(containerId).items.upsert({...troObject, id:'someUniqueId'});
+        
         return ({
             status: 200, 
             message: `Created TRO item with id: ${item.id}`
